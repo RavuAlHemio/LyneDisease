@@ -1,0 +1,5 @@
+# PyCharm spam
+.idea/
+
+# Python spam
+__pycache__/
