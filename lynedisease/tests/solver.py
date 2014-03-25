@@ -395,3 +395,97 @@ class SolverTests(TestCase):
 
         self.assertIsNotNone(solution)
         print(solution)
+
+    def test_f11(self):
+        puzzle = m.Puzzle()
+
+        # 0 = square, 1 = square-on-tip, 2 = triangle
+        nodes = [
+            m.ShapeNode(0, terminates=True),
+            m.ShapeNode(1, terminates=True),
+            # nothing
+            # nothing
+            m.MultipassNode(2),
+            m.MultipassNode(2),
+            m.ShapeNode(2, terminates=True),
+            m.ShapeNode(2, terminates=True),
+            m.MultipassNode(2),
+            m.MultipassNode(3),
+            m.MultipassNode(3),
+            m.ShapeNode(1, terminates=True),
+            m.ShapeNode(2),
+            m.ShapeNode(0, terminates=True),
+            m.ShapeNode(2),
+            m.ShapeNode(2),
+        ]
+
+        node_ids = [puzzle.add_node(n) for n in nodes]
+
+        ls.triangle_link(puzzle, node_ids[1], node_ids[3], node_ids[4])
+        for square in (
+                (0, 1, 2, 3),
+                (2, 3, 6, 7),
+                (3, 4, 7, 8),
+                (4, 5, 8, 9),
+                (6, 7, 10, 11),
+                (7, 8, 11, 12),
+                (8, 9, 12, 13),
+        ):
+            square_ids = [node_ids[i] for i in square]
+            ls.square_link(puzzle, *square_ids)
+
+        solution = s.solve(puzzle)
+
+        self.assertIsNotNone(solution)
+        print(solution)
+
+    def test_f18(self):
+        puzzle = m.Puzzle()
+
+        # 0 = square, 1 = square-on-tip, 2 = triangle
+        nodes = [
+            m.ShapeNode(0, terminates=True),
+            m.ShapeNode(1),
+            m.ShapeNode(1),
+            m.ShapeNode(1),
+            m.ShapeNode(1, terminates=True),
+            m.MultipassNode(2),
+            m.MultipassNode(3),
+            m.ShapeNode(0),
+            m.ShapeNode(1),
+            m.ShapeNode(1, terminates=True),
+            m.MultipassNode(3),
+            m.ShapeNode(0),
+            m.ShapeNode(2, terminates=True),
+            m.MultipassNode(2),
+            m.ShapeNode(2, terminates=True),
+            m.ShapeNode(0, terminates=True),
+            m.ShapeNode(2),
+            m.ShapeNode(2),
+            m.ShapeNode(2),
+            # nothing
+        ]
+
+        node_ids = [puzzle.add_node(n) for n in nodes]
+
+        ls.triangle_link(puzzle, node_ids[14], node_ids[15], node_ids[18])
+        for square in (
+                (0, 1, 4, 5),
+                (1, 2, 5, 6),
+                (2, 3, 6, 7),
+                (4, 5, 8, 9),
+                (5, 6, 9, 10),
+                (6, 7, 10, 11),
+                (8, 9, 12, 13),
+                (9, 10, 13, 14),
+                (10, 11, 14, 15),
+                (12, 13, 16, 17),
+                (13, 14, 17, 18),
+        ):
+            square_ids = [node_ids[i] for i in square]
+            ls.square_link(puzzle, *square_ids)
+
+        solution = s.solve(puzzle)
+
+        self.assertIsNotNone(solution)
+        print(solution)
