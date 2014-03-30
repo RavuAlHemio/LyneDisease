@@ -14,13 +14,23 @@ def square_link(puzzle, one, two, three, four):
     # | \/ |
     # | /\ |
     # 3 -- 4
-    puzzle.link_nodes(one, two)
-    puzzle.link_nodes(one, three)
-    puzzle.link_nodes(one, four)
-    puzzle.link_nodes(two, three)
-    puzzle.link_nodes(two, four)
-    puzzle.link_nodes(three, four)
-    puzzle.add_edge_conflict(m.Edge(one, four), m.Edge(two, three))
+    if one is not None:
+        if two is not None:
+            puzzle.link_nodes(one, two)
+        if three is not None:
+            puzzle.link_nodes(one, three)
+        if four is not None:
+            puzzle.link_nodes(one, four)
+    if two is not None:
+        if three is not None:
+            puzzle.link_nodes(two, three)
+        if four is not None:
+            puzzle.link_nodes(two, four)
+    if three is not None:
+        if four is not None:
+            puzzle.link_nodes(three, four)
+    if one is not None and two is not None and three is not None and four is not None:
+        puzzle.add_edge_conflict(m.Edge(one, four), m.Edge(two, three))
 
 
 def square_lattice(puzzle, node_ids, columns, rows):

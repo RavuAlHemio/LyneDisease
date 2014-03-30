@@ -6,7 +6,7 @@ __author__ = 'ondra'
 
 if __name__ == '__main__':
     while True:
-        line = input("w:h:line (a-z colors, A-Z terminators, 1-9 multipasses): ")
+        line = input("w:h:line (a-z colors, A-Z terminators, 1-9 multipasses, _ none): ")
         split_line = line.split(":")
         if len(split_line) != 3 or not split_line[0].isnumeric() or not split_line[1].isnumeric():
             print("format: width:height:spec")
@@ -31,20 +31,28 @@ if __name__ == '__main__':
             elif "1" <= c <= "9":
                 count = ord(c) - ord("0")
                 nodes.append(m.MultipassNode(count))
+            elif c == "_":
+                nodes.append(None)
 
         puzzle = m.Puzzle()
 
-        node_ids = [puzzle.add_node(n) for n in nodes]
+        node_ids = [(puzzle.add_node(n) if n is not None else None) for n in nodes]
         ls.square_lattice(puzzle, node_ids, width, height)
+
+        node_ids_to_nodes = {}
+        for (k, v) in enumerate(node_ids):
+            if v is not None:
+                node_ids_to_nodes[v] = k
 
         solution = s.solve(puzzle)
         new_solution = {}
         for (color, path) in solution.items():
             new_path = []
             for p in path:
+                back_p = node_ids_to_nodes[p]
                 new_p = "{0}{1}".format(
-                    chr(p % width + ord("0")),
-                    chr(p // width + ord("0")),
+                    chr(back_p % width + ord("A")),
+                    chr(back_p // width + ord("0")),
                 )
                 new_path.append(new_p)
             new_solution[color] = " ".join(new_path)
