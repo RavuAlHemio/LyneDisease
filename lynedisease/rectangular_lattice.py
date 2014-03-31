@@ -4,6 +4,89 @@ import lynedisease.solver as s
 
 __author__ = 'ondra'
 
+
+def format_solution_table_calc(solution, node_ids_to_nodes):
+    """
+    :type solution: dict[int, list[int]]
+    :type node_ids_to_nodes: dict[int, int]
+    :rtype: dict[int, str]
+    """
+    new_solution = {}
+    for (color, path) in solution.items():
+        new_path = []
+        for p in path:
+            back_p = node_ids_to_nodes[p]
+            new_p = "{0}{1}".format(
+                chr(back_p % width + ord("A")),
+                chr(back_p // width + ord("0")),
+            )
+            new_path.append(new_p)
+        new_solution[color] = " ".join(new_path)
+
+    return new_solution
+
+
+def format_solution_relative_movement(solution, node_ids_to_nodes):
+    """
+    :type solution: dict[int, list[int]]
+    :type node_ids_to_nodes: dict[int, int]
+    :rtype: dict[int, str]
+    """
+    new_solution = {}
+    for (color, path) in solution.items():
+        new_path = []
+        last_c, last_r = None, None
+        for p in path:
+            back_p = node_ids_to_nodes[p]
+            c = back_p % width
+            r = back_p // width
+
+            if last_c is None or last_r is None:
+                new_p = "{0}{1}".format(
+                    chr(c + ord("A")),
+                    chr(r + ord("0")),
+                )
+            else:
+                delta_c = last_c - c
+                delta_r = last_r - r
+                if delta_c == -1:
+                    # right
+                    if delta_r == -1:
+                        # down
+                        new_p = "\u2198"
+                    elif delta_r == 0:
+                        # vertical stay
+                        new_p = "\u2192"
+                    elif delta_r == 1:
+                        # up
+                        new_p = "\u2197"
+                elif delta_c == 0:
+                    # horizontal stay
+                    if delta_r == -1:
+                        # down
+                        new_p = "\u2193"
+                    elif delta_r == 1:
+                        # up
+                        new_p = "\u2191"
+                elif delta_c == 1:
+                    # left
+                    if delta_r == -1:
+                        # down
+                        new_p = "\u2199"
+                    elif delta_r == 0:
+                        # vertical stay
+                        new_p = "\u2190"
+                    elif delta_r == 1:
+                        # up
+                        new_p = "\u2196"
+            new_path.append(new_p)
+            last_c = c
+            last_r = r
+
+        new_solution[color] = new_path
+
+    return new_solution
+
 if __name__ == '__main__':
     while True:
         line = input("w:h:line (a-z colors, A-Z terminators, 1-9 multipasses, _ none): ")
@@ -45,16 +128,5 @@ if __name__ == '__main__':
                 node_ids_to_nodes[v] = k
 
         solution = s.solve(puzzle)
-        new_solution = {}
-        for (color, path) in solution.items():
-            new_path = []
-            for p in path:
-                back_p = node_ids_to_nodes[p]
-                new_p = "{0}{1}".format(
-                    chr(back_p % width + ord("A")),
-                    chr(back_p // width + ord("0")),
-                )
-                new_path.append(new_p)
-            new_solution[color] = " ".join(new_path)
-
-        print(new_solution)
+        #print(format_solution_table_calc(solution, node_ids_to_nodes))
+        print(format_solution_relative_movement(solution, node_ids_to_nodes))
